@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import type { Announcement } from '../../types/announcement';
+import ActionButton from './ActionButton';
 import AnnouncementCard from './AnnouncementCard';
+import SectionHeading from './SectionHeading';
 
 const initialAnnouncements: Announcement[] = [
   {
@@ -51,19 +53,37 @@ export default function AnnouncementPanel() {
     );
   };
 
+  const handleRefresh = () => {
+    setStatusMessage(
+      unreadCount === 0
+        ? 'Fresh updates are not available right now.'
+        : `${unreadCount} unread message${unreadCount === 1 ? '' : 's'} ready for review.`
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Campus Connect</Text>
-      <Text style={styles.subtitle}>One campus. Connected students.</Text>
+      <FlatList
+        data={announcements}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={() => (
+          <View>
+            <SectionHeading title="Campus Connect" subtitle="One campus. Connected students." />
 
-      <Text style={styles.count}>Unread Announcements: {unreadCount}</Text>
-      <Text style={styles.status}>{statusMessage}</Text>
+            <Text style={styles.count}>Unread Announcements: {unreadCount}</Text>
+            <Text style={styles.status}>{statusMessage}</Text>
 
-      <Text style={styles.heading}>Campus Announcements</Text>
-
-      {announcements.map(item => (
-        <AnnouncementCard key={item.id} item={item} onToggleRead={toggleRead} />
-      ))}
+            <View style={styles.toolbar}>
+              <Text style={styles.heading}>Campus Announcements</Text>
+              <ActionButton label="Refresh" onPress={handleRefresh} />
+            </View>
+          </View>
+        )}
+        renderItem={({ item }) => (
+          <AnnouncementCard key={item.id} item={item} onToggleRead={toggleRead} />
+        )}
+      />
     </View>
   );
 }
@@ -71,20 +91,12 @@ export default function AnnouncementPanel() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
-    justifyContent: 'center',
     backgroundColor: '#F4F7FB',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 8,
-    color: '#101828',
-  },
-  subtitle: {
-    fontSize: 15,
-    marginBottom: 24,
-    color: '#475467',
+  listContent: {
+    paddingHorizontal: 20,
+    paddingTop: 28,
+    paddingBottom: 32,
   },
   count: {
     fontSize: 17,
@@ -97,10 +109,17 @@ const styles = StyleSheet.create({
     color: '#2563EB',
     marginBottom: 20,
   },
+  toolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginBottom: 12,
+  },
   heading: {
     fontSize: 20,
     fontWeight: '700',
-    marginBottom: 12,
     color: '#111827',
+    flex: 1,
   },
 });
