@@ -1,34 +1,15 @@
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { announcementData } from '../../services/announcementData';
 import type { Announcement } from '../../types/announcement';
 import ActionButton from './ActionButton';
 import AnnouncementCard from './AnnouncementCard';
 import SectionHeading from './SectionHeading';
 
-const initialAnnouncements: Announcement[] = [
-  {
-    id: 'a1',
-    title: 'Enrollment reminders',
-    category: 'Academic',
-    read: false,
-  },
-  {
-    id: 'a2',
-    title: 'Campus orientation',
-    category: 'Events',
-    read: true,
-  },
-  {
-    id: 'a3',
-    title: 'Library schedule',
-    category: 'Notice',
-    read: false,
-  },
-];
-
 export default function AnnouncementPanel() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
+  const [announcements, setAnnouncements] = useState<Announcement[]>(announcementData);
   const [statusMessage, setStatusMessage] = useState('Loading announcements...');
 
   const unreadCount = announcements.filter(item => !item.read).length;
@@ -51,6 +32,10 @@ export default function AnnouncementPanel() {
         item.id === id ? { ...item, read: !item.read } : item
       )
     );
+  };
+
+  const handleSelectAnnouncement = (id: string) => {
+    router.push({ pathname: '/announcements/[id]' as any, params: { id } });
   };
 
   const handleRefresh = () => {
@@ -81,7 +66,12 @@ export default function AnnouncementPanel() {
           </View>
         )}
         renderItem={({ item }) => (
-          <AnnouncementCard key={item.id} item={item} onToggleRead={toggleRead} />
+          <AnnouncementCard
+            key={item.id}
+            item={item}
+            onToggleRead={toggleRead}
+            onPress={() => handleSelectAnnouncement(item.id)}
+          />
         )}
       />
     </View>

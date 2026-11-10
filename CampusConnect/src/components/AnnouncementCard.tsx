@@ -5,14 +5,21 @@ import type { Announcement } from '../../types/announcement';
 type AnnouncementCardProps = {
   item: Announcement;
   onToggleRead: (id: string) => void;
+  onPress?: () => void;
 };
 
 export default function AnnouncementCard({
   item,
   onToggleRead,
+  onPress,
 }: AnnouncementCardProps) {
   return (
-    <View style={styles.card}>
+    <View
+      accessible
+      accessibilityRole="button"
+      style={styles.card}
+      onTouchEnd={() => onPress?.()}
+    >
       <View style={styles.headerRow}>
         <View style={styles.textGroup}>
           <Text style={styles.title}>{item.title}</Text>
