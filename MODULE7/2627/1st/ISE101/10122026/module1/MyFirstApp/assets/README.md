@@ -1,1 +1,0 @@
-Place app images, icons, and font files in this folder.
